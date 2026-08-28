@@ -95,6 +95,7 @@ function attemptMove(direction: Direction) {
     overlayEl.classList.add("lost");
     overlayEl.hidden = false;
   }
+  if (ended) replayEl.focus();
 }
 
 const KEYS: Record<string, Direction> = {
