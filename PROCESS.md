@@ -17,9 +17,15 @@ A 4x4 sliding-tile 2048 clone: arrow keys or a swipe slide every tile one
 direction, equal tiles merge and double, and a new tile spawns after every
 move that actually moved something. The board opens with two tiles and no
 text telling you what to do; if you sit still for a moment it nudges itself,
-inviting the first press. The round ends the same way the real game does ---
-reach 2048 and you've won, run out of empty cells and matching neighbours and
-you've lost --- either way an overlay appears with one button to try again.
+inviting the first press. A few moves in, a second kind of tile starts
+appearing --- a glitch, marked ✕ --- that slides like any other but never
+merges; left off a corner it can spread into a neighbour, and the only way
+to clear one is to land a merge right next to it. The same "chase merges,
+keep the big tile cornered" habit 2048 already teaches now also does the
+job of containing the hazard. The round ends the same way the real game
+does --- reach 2048 and you've won, run out of empty cells and matching
+neighbours and you've lost --- either way an overlay appears with one
+button to try again.
 
 ## The moments that mattered
 
@@ -59,6 +65,26 @@ you've lost --- either way an overlay appears with one button to try again.
    that board and paints tiles. That split is why moment 1 was possible at
    all: the rules could be asserted without a page to render them onto.
    [`6937bf0`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit5-YanZZZZZZZZ/commit/6937bf08943bde6a3ea573df7303f9be533105f1)
+
+5. **A second mechanic had to interact with the first, not sit beside it.**
+   The easy version of "one more mechanic" was a second tile type with its
+   own separate rule to learn --- exactly the kind of thing the no-tutorial
+   constraint punishes, since a stranger only gets one instinct for free.
+   Instead the glitch tile was built to ride the instinct 2048 already
+   teaches: it slides under the same rule as everything else, so nothing
+   about *how* it moves needs explaining, and it's neutralised by the same
+   "merge things together" action a player is already doing, so nothing
+   about *how to beat it* needs explaining either. Getting that right meant
+   `move()` had to start reporting where each tile came from and landed
+   (`tileMoves`), not just the resulting board, so a merge next to a glitch
+   could be detected and purged in the same pass.
+   [`7528066`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit5-YanZZZZZZZZ/commit/75280663e90cd19a23359ce09ba161d0fe7742e1)
+   The full-board redraw from moment 4 also stopped being enough once there
+   were slides, merges and spreads to tell apart --- `main.ts` now keeps a
+   persistent tile per cell and repositions it from `tileMoves`, so a slide
+   and a merge read as visibly different events instead of an identical
+   flicker.
+   [`c9cba22`](https://github.com/comp4020-agentic-coding-studio/comp4020-crit5-YanZZZZZZZZ/commit/c9cba22fe35150eac98633d1ea60798ff7c33c1d)
 
 ## Before you ship
 
